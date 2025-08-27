@@ -8,7 +8,7 @@ import {
   Button
 } from '@mui/material';
 
-const CreateUser = ({ open, handleClose, handleAddUser }) => {
+const CreateUser = ({ open, handleClose }) => {
   const [newUser, setNewUser] = useState({ 
       name: '', 
       email: '', 

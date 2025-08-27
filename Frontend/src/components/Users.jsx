@@ -27,6 +27,12 @@ const Users = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [updateData, setUpdateData] = useState({ 
+        name: '', 
+        email: '', 
+        age: '', 
+        message: '' 
+      })
   const [users, setUsers] = useState([]);
 
   const getUsers = async() => {
@@ -37,8 +43,8 @@ const Users = () => {
 
   useEffect(()=> {
     getUsers().then((data) => setUsers(data))
-  },[])
-console.log('all data', users);
+  },[updateData, users])
+// console.log('all data', users);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,18 +53,26 @@ console.log('all data', users);
   const handleClose = () => {
     setOpen(false);
   };
-  const handleCloseUpdate = () => {
+
+  const handleUpdateOpen = (userData) => {
+    setUpdateOpen(true)
+    setUpdateData(userData)
+  }
+  const handleUpdateClose = () => {
     setUpdateOpen(false);
   };
 
-  const handleAddUser = (userData) => {
-    setUsers([...users, { ...userData, id: users.length + 1, messge: 'Hii ' + userData.name }]);
-    handleClose();
-  };
+  // const handleAddUser = (userData) => {
+  //   setUsers([...users, { ...userData, id: users.length + 1, messge: 'Hii ' + userData.name }]);
+  //   handleClose();
+  // };
 
   const handleDelete = (id) => {
     setUsers(users.filter(user => user.id !== id));
   };
+
+  console.log('users', users);
+  
 
   return (
     <Box
@@ -121,7 +135,7 @@ console.log('all data', users);
                   <TableCell>{user.message}</TableCell>
                   <TableCell>
                     <IconButton color="primary" size="small"
-                    onClick={() => setUpdateOpen(true)}
+                    onClick={() => handleUpdateOpen(user)}
                     >
                       <EditIcon />
                     </IconButton>
@@ -143,12 +157,14 @@ console.log('all data', users);
       <CreateUser 
         open={open} 
         handleClose={handleClose} 
-        handleAddUser={handleAddUser} 
       />
 
       <UpdateUser
       open={updateOpen}
-      handleClose={handleCloseUpdate} 
+      handleClose={handleUpdateClose} 
+      updateData={updateData}
+      setUpdateData={setUpdateData}
+      // getUsers={getUsers}
       />
     </Box>
   );

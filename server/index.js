@@ -22,6 +22,25 @@ app.post("/create", (req, res) => {
     .catch((error) => res.json(error))
 })
 
+// app.get('/updateUser/:id', (req, res) => {
+//     const id = req.params.id;
+//     UserModel.findById({_id:id})   // use _id id in compass
+//     .then((data) => res.json(data))
+//     .catch((error) => res.json(error))
+// })
+
+app.put('/updateUser/:id', (req, res) => {
+    const id = req.params.id;
+    UserModel.findByIdAndUpdate({_id : id}, {  // compass is thats why _id
+        name : req.body.name,
+        email : req.body.email,
+        age : req.body.age,
+        message : req.body.message
+    })
+    .then((data) => res.json(data))
+    .catch((error) => res.json(error))
+})
+
 app.listen(3001, ()=>{
     console.log('Server is running')
 })
