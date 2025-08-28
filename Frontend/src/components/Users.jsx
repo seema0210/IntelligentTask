@@ -19,8 +19,9 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon
 } from '@mui/icons-material';
-import CreateUser from './CreateUser'; // Adjust the import path as needed
+import CreateUser from './CreateUser';
 import UpdateUser from './UpdateUser';
+import { getUsers, handleDelete } from '../ApiHandler/HandleApi';
 
 const Users = () => {
   const theme = useTheme();
@@ -35,16 +36,9 @@ const Users = () => {
       })
   const [users, setUsers] = useState([]);
 
-  const getUsers = async() => {
-    const response = await fetch("http://localhost:3001")
-    const res = await response.json()
-    return res
-  }
-
   useEffect(()=> {
     getUsers().then((data) => setUsers(data))
   },[updateData, users])
-// console.log('all data', users);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -61,18 +55,6 @@ const Users = () => {
   const handleUpdateClose = () => {
     setUpdateOpen(false);
   };
-
-  // const handleAddUser = (userData) => {
-  //   setUsers([...users, { ...userData, id: users.length + 1, messge: 'Hii ' + userData.name }]);
-  //   handleClose();
-  // };
-
-  const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
-  };
-
-  console.log('users', users);
-  
 
   return (
     <Box
@@ -127,7 +109,7 @@ const Users = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
+              {users?.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -142,7 +124,7 @@ const Users = () => {
                     <IconButton 
                       color="error" 
                       size="small"
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => handleDelete(user._id)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -164,7 +146,6 @@ const Users = () => {
       handleClose={handleUpdateClose} 
       updateData={updateData}
       setUpdateData={setUpdateData}
-      // getUsers={getUsers}
       />
     </Box>
   );

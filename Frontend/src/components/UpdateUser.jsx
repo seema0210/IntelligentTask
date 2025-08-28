@@ -8,25 +8,17 @@ import {
     Button
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { updateUser } from '../ApiHandler/HandleApi';
+import { validateUser } from '../validation/Validation';
+import { toast } from 'react-toastify';
 
-const UpdateUser = ({ open, handleClose, updateData, setUpdateData }) => {
+const UpdateUser = ({ open, handleClose, updateData }) => {
     const [newUser, setNewUser] = useState({
         name: '',
         email: '',
         age: '',
         message: ''
     });
-
-    const getUsers = async() => {
-    const response = await fetch("http://localhost:3001")
-    const res = await response.json()
-    return res
-  }
-
-//   useEffect(() => {
-//     getUsers()
-//   }, [newUser])
-
 
     useEffect(() => {
         if (updateData) {
@@ -47,38 +39,29 @@ const UpdateUser = ({ open, handleClose, updateData, setUpdateData }) => {
         )
     }
 
-    const updateUser = async () => {
-        // let obj = {
-        //     name : updateData.name,
-        //     email : updateData.email,
-        //     age : updateData.age,
-        //     message : updateData.message
-        // }
-        try {
-            const response = await fetch(`http://localhost:3001/updateUser/${updateData._id}`, { // mongodb documents id : _id
-                method: 'PUT',
-                body: JSON.stringify(newUser),
-                headers: {
-                    "Content-Type": 'application/json'
-                }
-            })
-            const res = await response.json()
-            console.log('updated res', res);
-            return res
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     const handleSubmit = () => {
 
-        updateUser().then((data) => setNewUser(data))
+        const errorMsg = validateUser(newUser);
+            if (errorMsg) {
+              toast.warning(errorMsg); // show toast warning
+              return;
+            }
+        if (!updateData || !updateData._id) {
+            console.error("No updateData provided");
+            return;
+        }
+        updateUser(updateData._id, newUser).then((data) => {
+            if (data) {
+                setNewUser({
+                    name: data.name || '',
+                    email: data.email || '',
+                    age: data.age || '',
+                    message: data.message || ''
+                });
+            }
+        })
+            .catch((err) => console.error("Update failed:", err));
         handleClose()
-        // if (newUser.name && newUser.email && newUser.age) {
-        //     handleAddUser(newUser);
-        //     setNewUser({ name: '', email: '', age: '' });
-        // }
     };
 
     const handleCancel = () => {
@@ -138,11 +121,9 @@ const UpdateUser = ({ open, handleClose, updateData, setUpdateData }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>Cancel</Button>
-                {/* <Link to='/update'> */}
                 <Button onClick={handleSubmit} variant="contained">
                     Update User
                 </Button>
-                {/* </Link> */}
             </DialogActions>
         </Dialog>
     );

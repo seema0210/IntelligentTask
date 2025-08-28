@@ -7,6 +7,9 @@ import {
   TextField,
   Button
 } from '@mui/material';
+import { addUser } from '../ApiHandler/HandleApi';
+import { validateUser } from '../validation/Validation';
+import { toast } from 'react-toastify';
 
 const CreateUser = ({ open, handleClose }) => {
   const [newUser, setNewUser] = useState({ 
@@ -22,22 +25,13 @@ const CreateUser = ({ open, handleClose }) => {
       })
     }
 
-    const addUser = async(data) => {
-      const response = await fetch("http://localhost:3001/create", {
-        method : "POST",
-        body : JSON.stringify(data),
-        headers : {
-          "Content-type" : "application/json"
-        }
-      })
-      const res = await response.json()
-      console.log('posted data', res)
-      return res
-    }
-
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault()
-    const { name, email, age, message } = newUser
+    const errorMsg = validateUser(newUser);
+    if (errorMsg) {
+      toast.warning(errorMsg); // show toast warning
+      return;
+    }
     let obj = {
       name : newUser.name,
       email : newUser.email,
@@ -46,11 +40,6 @@ const CreateUser = ({ open, handleClose }) => {
     }
     addUser(obj)
     handleClose();
-    console.log('data obj',obj)
-    // if (newUser.name && newUser.email && newUser.age) {
-    //   handleAddUser(newUser);
-    //   setNewUser({ name: '', email: '', age: '', message: '' });
-    // }
   };
 
   const handleCancel = () => {
